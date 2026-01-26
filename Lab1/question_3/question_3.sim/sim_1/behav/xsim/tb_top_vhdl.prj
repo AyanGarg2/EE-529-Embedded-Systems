@@ -1,0 +1,11 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../question_3.srcs/sources_1/new/overflow_detection.vhd" \
+"../../../../question_3.srcs/sources_1/new/signed_adder.vhd" \
+"../../../../question_3.srcs/sources_1/new/mux.vhd" \
+"../../../../question_3.srcs/sources_1/new/top.vhd" \
+"../../../../question_3.srcs/sim_1/new/signed_adder_tb.vhd" \
+"../../../../question_3.srcs/sim_1/new/top_tb.vhd" \
+
+# Do not sort compile order
+nosort
