@@ -1,6 +1,6 @@
 
 
-## Lab 1: Lab-1: Design and verification of control-driven switching and arithmetic circuits using hierarchical VHDL modeling.
+## Lab 1: Design and verification of control-driven switching and arithmetic circuits using hierarchical VHDL modeling.
 
 Q1: Design and implementation of a 2×2 digital switch using control-driven combinational logic.
 
