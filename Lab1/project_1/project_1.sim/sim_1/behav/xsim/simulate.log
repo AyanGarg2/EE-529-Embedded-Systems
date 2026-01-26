@@ -1,0 +1,4 @@
+Time resolution is 1 ps
+Failure: Simulation completed successfully
+Time: 40 ns  Iteration: 0  Process: /tb_lab1/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab1/project_1/project_1.srcs/sim_1/new/Lab1_tb.vhd
+$finish called at time : 40 ns : File "C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab1/project_1/project_1.srcs/sim_1/new/Lab1_tb.vhd" Line 53

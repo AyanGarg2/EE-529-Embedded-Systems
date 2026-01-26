@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Thu Jan 22 21:03:09 2026
+# Process ID         : 16072
+# Current directory  : C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab1/project_1/project_1.runs/synth_1
+# Command line       : vivado.exe -log Lab1b.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source Lab1b.tcl
+# Log file           : C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab1/project_1/project_1.runs/synth_1/Lab1b.vds
+# Journal file       : C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab1/project_1/project_1.runs/synth_1\vivado.jou
+# Running On         : Ayan
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : Intel(R) Core(TM) i7-14700HX
+# CPU Frequency      : 2304 MHz
+# CPU Physical cores : 20
+# CPU Logical cores  : 28
+# Host memory        : 34053 MB
+# Swap memory        : 2147 MB
+# Total Virtual      : 36200 MB
+# Available Virtual  : 13061 MB
+#-----------------------------------------------------------
+source Lab1b.tcl -notrace
