@@ -1,0 +1,4 @@
+Time resolution is 1 ps
+Failure: Simulation completed successfully
+Time: 155 ns  Iteration: 1  Process: /q1_structural_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab2/Question_1/Question_1.srcs/sim_1/new/q1_structural_tb.vhd
+$finish called at time : 155 ns : File "C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab2/Question_1/Question_1.srcs/sim_1/new/q1_structural_tb.vhd" Line 75
