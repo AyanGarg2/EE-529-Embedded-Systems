@@ -1,0 +1,21 @@
+Time resolution is 1 ps
+Note: TEST 1: Writing data to memory
+Time: 50 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: TEST 2: Single read operation
+Time: 310 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Error: ERROR: Read data mismatch! Expected 0xAA, got 0
+Time: 380 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: Read successful: Data = 0xAA
+Time: 380 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: TEST 3: EDO Burst Read - Demonstrating overlap feature
+Time: 450 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: --- Starting EDO Burst Read ---
+Time: 800 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: First read: Data = 0x0
+Time: 855 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: EDO feature: Data still valid = 0x0
+Time: 870 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: Second read: Data = 0x0
+Time: 895 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
+Note: Third read: Data = 0x0
+Time: 935 ns  Iteration: 0  Process: /EDO_DRAM_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/EDODRAM_4kB/EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd
