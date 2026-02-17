@@ -1,0 +1,35 @@
+Time resolution is 1 ps
+Note: ========================================
+Time: 35 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: MeanCalculator Testbench
+Time: 35 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: k=13  n=8
+Time: 35 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: SRAM initialised to 0x0A (10) for all entries
+Time: 35 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: Expected mean = floor(13*10 / 13) = 10
+Time: 35 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: ========================================
+Time: 35 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: [PASS] TC1 Default-init mean=10  got=10  expected=10
+Time: 225 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: [PASS] TC2 Reset clears ready
+Time: 265 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: [PASS] TC3 Run after reset mean=10  got=10  expected=10
+Time: 465 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: [PASS] TC4 Consecutive run mean=10  got=10  expected=10
+Time: 675 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: [PASS] TC5 Reset mid-operation clears ready
+Time: 745 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: [PASS] TC5 Post-mid-reset run mean=10  got=10  expected=10
+Time: 925 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: ========================================
+Time: 945 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: PASS: 6
+Time: 945 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: FAIL: 0
+Time: 945 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: ALL TESTS PASSED
+Time: 945 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd
+Note: ========================================
+Time: 945 ns  Iteration: 0  Process: /MeanCalculator_tb/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_4/question_4.srcs/sim_1/new/question_4_tb.vhd

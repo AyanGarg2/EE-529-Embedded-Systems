@@ -1,0 +1,4 @@
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sources_1/new/SRAM.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'SRAM_6116'
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sim_1/new/SRAM_tb.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'tb_SRAM_6116'

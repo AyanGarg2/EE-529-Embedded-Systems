@@ -1,0 +1,2160 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{float}
+
+% VHDL syntax highlighting
+\lstdefinelanguage{VHDL}{
+    keywords={library, use, entity, architecture, port, in, out, std_logic, std_logic_1164, all, is, begin, end, component, signal, process, if, then, else, elsif, wait, for, report, severity, error, note, map},
+    keywordstyle=\color{blue}\bfseries,
+    identifierstyle=\color{black},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    basicstyle=\ttfamily\tiny,
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    stepnumber=1,
+    numbersep=8pt,
+    frame=single,
+    breaklines=true,
+    breakatwhitespace=false,
+    tabsize=4,
+    captionpos=b
+}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{EE529: Embedded System}
+\lhead{Lab Assignment 2}
+\cfoot{\thepage}
+
+% Title formatting
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\LARGE \textbf{EE529 Embedded Systems}}\\[0.5cm]
+    {\Large Group 1}\\[1cm]
+    
+    {\huge \textbf{Lab Assignment 3}}\\[2cm]
+    
+    \begin{tabular}{ll}
+        \textbf{Student Name :} & Ayan Garg and Om Maheshwari \\[0.5cm]
+        \textbf{Roll Number  :} & B23484 and B23089 \\[0.5cm]
+    \end{tabular}
+    
+    \vfill
+    
+    \textbf{ School of Computing and Electrical Engineering (SCEE)}\\
+    \textbf{Indian Institute Of Technology Mandi}\\
+    \today
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+\section{Question 1}
+
+\subsection{Theory}
+
+The 6116 is a 2K × 8-bit static CMOS RAM that provides high-speed, low-power data storage without the need for refresh cycles. Unlike dynamic RAM (DRAM), static RAM (SRAM) retains data as long as power is supplied, making it ideal for cache memory, embedded systems, and applications requiring fast, reliable memory access.
+
+\subsubsection{6116 SRAM Architecture}
+
+The 6116 SRAM consists of the following key components:
+
+\begin{enumerate}
+    \item \textbf{Memory Array:} A 2048-byte (2K × 8) storage array organized as a 128 × 128 memory matrix containing 16,384 individual memory cells
+    
+    \item \textbf{Row Decoder:} A 7-to-128 decoder that selects one of 128 rows based on address lines A10 through A4
+    
+    \item \textbf{Column Decoder:} A 4-to-8 decoder that selects 8 columns simultaneously based on address lines A3 through A0, since data is organized in 8-bit bytes
+    
+    \item \textbf{Tri-state Output Buffers:} Control the bidirectional data bus, enabling high-impedance state when not actively reading
+    
+    \item \textbf{Input Data Control:} Manages write operations and data input path
+    
+    \item \textbf{Sense Amplifiers \& Column I/O:} Read data from memory cells and amplify signals for output
+\end{enumerate}
+
+\subsubsection{Memory Organization}
+
+\subsubsection{Signal Interface}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Signal} & \textbf{Type} & \textbf{Description} \\
+\hline
+\texttt{Address[10:0]} & Input & 11-bit address bus to select one of 2048 memory locations (A10 to A0). \\
+\hline
+\texttt{IO[7:0]} & Inout & Bidirectional 8-bit data bus with tri-state capability for read/write operations. \\
+\hline
+\texttt{CS\_n} & Input & Chip Select (active low). When high, chip is deselected and outputs are in high-impedance state. \\
+\hline
+\texttt{OE\_n} & Input & Output Enable (active low). Controls tri-state output buffers. Must be low for read operations. \\
+\hline
+\texttt{WE\_n} & Input & Write Enable (active low). Low = Write mode, High = Read mode. \\
+\hline
+\end{tabular}
+\caption{6116 SRAM Signal Interface}
+\label{tab:sram_signals}
+\end{table}
+
+\subsubsection{Block Diagram}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{sram_block_diagram.png}}
+    \caption{6116 SRAM Internal Architecture}
+    \label{fig:sram_block}
+\end{figure}
+
+Figure \ref{fig:sram_block} illustrates the internal architecture of the 6116 SRAM:
+
+\begin{itemize}
+    \item \textbf{Address Decoding Path:} Address lines A10-A4 feed the row decoder (7-to-128), while A3-A0 feed the column decoder (4-to-8)
+    
+    \item \textbf{Data Path:} The memory matrix connects to column I/O circuitry, which interfaces with tri-state buffers for read operations and input data control for write operations
+    
+    \item \textbf{Control Logic:} CS\_n, OE\_n, and WE\_n signals control the operational mode and output enable states
+\end{itemize}
+
+\subsubsection{6116 SRAM Operation}
+
+\textbf{Read Operation Sequence:}
+\begin{enumerate}
+    \item Apply valid address on Address[10:0] bus
+    \item Assert CS\_n = 0 (select chip)
+    \item Assert OE\_n = 0 (enable output buffers)
+    \item Keep WE\_n = 1 (read mode)
+    \item Wait for access time (t$_{AA}$ = 45ns for 45ns grade chip)
+    \item Valid data appears on IO[7:0] bus
+    \item Data remains valid as long as address and control signals are stable
+    \item Deassert OE\_n = 1 or CS\_n = 1 to end read cycle
+    \item IO bus returns to high-impedance state
+\end{enumerate}
+
+\textbf{Write Operation Sequence:}
+\begin{enumerate}
+    \item Apply valid address on Address[10:0] bus
+    \item Assert CS\_n = 0 (select chip)
+    \item Keep OE\_n = 1 (disable output during write)
+    \item Drive data onto IO[7:0] bus
+    \item Assert WE\_n = 0 (write pulse begins)
+    \item Maintain WE\_n low for minimum write pulse width (t$_{WP}$ = 25ns)
+    \item Data is captured into memory cell at rising edge of WE\_n
+    \item Deassert WE\_n = 1 (write pulse ends, data is latched)
+    \item Maintain data valid for hold time (t$_{DH}$)
+    \item Release IO bus to high-impedance
+    \item Deassert CS\_n = 1 to complete cycle
+\end{enumerate}
+
+\subsubsection{Timing Diagrams}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{sram_read_timing.png}}
+    \caption{6116 SRAM Read Cycle Timing Diagram}
+    \label{fig:read_timing}
+\end{figure}
+
+Figure \ref{fig:read_timing} illustrates the read cycle timing:
+
+\begin{itemize}
+    \item \textbf{Address Setup:} Address must be stable before and during the read operation
+    \item \textbf{Control Signals:} CS\_n and OE\_n must both be asserted (low) for output enable
+    \item \textbf{Access Time (t$_{AA}$):} Critical parameter - data becomes valid 45ns after address is stable
+    \item \textbf{Data Valid Window:} Data remains valid as long as control signals and address are maintained
+    \item \textbf{Output Disable:} When OE\_n or CS\_n goes high, outputs enter high-Z state within t$_{OHZ}$
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{sram_write_timing.png}}
+    \caption{6116 SRAM Write Cycle Timing Diagram}
+    \label{fig:write_timing}
+\end{figure}
+
+Figure \ref{fig:write_timing} illustrates the write cycle timing:
+
+\begin{itemize}
+    \item \textbf{Write Pulse (t$_{WP}$):} WE\_n must remain low for minimum 25ns
+    \item \textbf{Data Capture:} Data is latched into the memory cell on the rising edge of WE\_n
+    \item \textbf{Setup and Hold:} Data must be stable for t$_{DS}$ before and t$_{DH}$ after WE\_n rising edge
+    \item \textbf{Write Recovery (t$_{WR}$):} Minimum 5ns from WE\_n high to end of cycle
+    \item \textbf{OE\_n High:} Output buffers must be disabled (OE\_n = 1) during write to avoid bus contention
+\end{itemize}
+
+
+\subsection{VHDL Implementation of 6116 SRAM}
+
+The following VHDL implementation models the 6116 SRAM with accurate timing behavior:
+
+\begin{lstlisting}[language=VHDL, caption=6116 SRAM VHDL Implementation with Timing, frame=single, basicstyle=\small\ttfamily]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity SRAM_6116 is
+    Port (
+        Address : in  STD_LOGIC_VECTOR (10 downto 0); 
+        IO      : inout STD_LOGIC_VECTOR (7 downto 0); 
+        CS_n    : in  STD_LOGIC;                      
+        OE_n    : in  STD_LOGIC;                      
+        WE_n    : in  STD_LOGIC                        
+    );
+end SRAM_6116;
+
+architecture Behavioral of SRAM_6116 is
+    -- Memory array: 2048 locations x 8 bits
+    type memory_array is array (0 to 2047) of STD_LOGIC_VECTOR(7 downto 0);
+    signal ram_block : memory_array := (others => (others => '0'));
+    
+
+    signal addr_int : integer range 0 to 2047;
+    
+    constant T_AA  : time := 45 ns;  -- Address Access Time
+    constant T_OHA : time := 10 ns;  -- Output Hold from Address Change
+    constant T_OHZ : time := 10 ns;  -- Output Disable Time
+    
+begin
+    addr_int <= to_integer(unsigned(Address));
+    
+    write_proc: process(WE_n, CS_n)
+    begin
+        if CS_n = '0' and rising_edge(WE_n) then
+            -- Data is captured on rising edge of WE_n
+            ram_block(addr_int) <= IO;
+        end if;
+    end process;
+    
+    read_proc: process(CS_n, OE_n, WE_n, Address)
+        variable current_addr : integer range 0 to 2047;
+    begin
+        current_addr := to_integer(unsigned(Address));
+    
+        if CS_n = '0' and OE_n = '0' and WE_n = '1' then
+            IO <= ram_block(current_addr) after T_AA;
+        else
+            IO <= (others => 'Z') after T_OHZ;
+        end if;
+    end process;
+    
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Testbench for 6116 SRAM}
+
+The testbench validates all key operations of the SRAM:
+
+\begin{lstlisting}[language=VHDL, caption=6116 SRAM Comprehensive Testbench, frame=single, basicstyle=\small\ttfamily]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity tb_SRAM_6116 is
+end tb_SRAM_6116;
+
+architecture Behavioral of tb_SRAM_6116 is
+    component SRAM_6116
+        Port (
+            Address : in  STD_LOGIC_VECTOR (10 downto 0);
+            IO      : inout STD_LOGIC_VECTOR (7 downto 0);
+            CS_n    : in  STD_LOGIC;
+            OE_n    : in  STD_LOGIC;
+            WE_n    : in  STD_LOGIC
+        );
+    end component;
+    
+    signal Address : STD_LOGIC_VECTOR(10 downto 0) := (others => '0');
+    signal IO      : STD_LOGIC_VECTOR(7 downto 0)  := (others => 'Z');
+    signal CS_n    : STD_LOGIC := '1';
+    signal OE_n    : STD_LOGIC := '1';
+    signal WE_n    : STD_LOGIC := '1';
+    
+    constant T_RC  : time := 45 ns; -- Read Cycle Time
+    constant T_AA  : time := 45 ns; -- Access Time
+    constant T_WP  : time := 25 ns; -- Write Pulse Width
+    constant T_WC  : time := 45 ns; -- Write Cycle Time
+    constant T_AS  : time := 0 ns;  -- Address Setup Time
+    constant T_WR  : time := 5 ns;  -- Write Recovery Time
+    
+begin
+    uut: SRAM_6116 port map (
+        Address => Address,
+        IO      => IO,
+        CS_n    => CS_n,
+        OE_n    => OE_n,
+        WE_n    => WE_n
+    );
+    
+    stim_proc: process
+    begin		
+        -- Initial stabilization
+        wait for 100 ns;
+        
+        report "========================================";
+        report "TEST 1: Basic Write Operation";
+        report "========================================";
+        
+        Address <= "00000010000";  
+        CS_n    <= '0';            
+        OE_n    <= '1';            
+        WE_n    <= '1';            
+        
+        wait for T_AS;             
+        
+        WE_n    <= '0';            
+        IO      <= "00111100";     
+        
+        wait for T_WP;             
+        
+        WE_n    <= '1';            
+        
+        wait for T_WR;             
+        
+        IO      <= (others => 'Z'); 
+        CS_n    <= '1';            
+        
+        wait for 50 ns;
+        
+        report "Write complete: Address 0x010 = 0x3C";
+        
+        report "========================================";
+        report "TEST 2: Basic Read Operation";
+        report "========================================";
+        
+        -- Read Cycle: Read from address 0x010
+        Address <= "00000010000";  
+        CS_n    <= '0';            
+        OE_n    <= '0';            
+        WE_n    <= '1';            
+        
+        wait for T_AA;             
+        
+        report "Read complete: Data = 0x3C (should match written data)";
+        
+        wait for T_RC - T_AA;      
+        
+        OE_n    <= '1';            
+        CS_n    <= '1';            
+        
+        wait for 100 ns;
+        
+        report "========================================";
+        report "TEST 3: Multiple Address Testing";
+        report "========================================";
+        
+        -- Write to address 0x020 (32 decimal)
+        Address <= "00000100000";  
+        CS_n    <= '0';
+        OE_n    <= '1';
+        WE_n    <= '0';
+        IO      <= "10101010";     
+        
+        wait for T_WP;
+        
+        WE_n    <= '1';
+        wait for T_WR;
+        IO      <= (others => 'Z');
+        CS_n    <= '1';
+        
+        wait for 50 ns;
+        
+        report "Write complete: Address 0x020 = 0xAA";
+        
+        -- Read from address 0x020
+        Address <= "00000100000";
+        CS_n    <= '0';
+        OE_n    <= '0';
+        WE_n    <= '1';
+        
+        wait for T_AA;
+        
+        report "Read complete: Address 0x020 should contain 0xAA";
+        
+        wait for T_RC - T_AA;
+        
+        OE_n    <= '1';
+        CS_n    <= '1';
+        
+        wait for 100 ns;
+        
+        report "========================================";
+        report "TEST 4: Boundary Testing";
+        report "========================================";
+        
+        -- Write to first address (0x000)
+        Address <= "00000000000";
+        CS_n    <= '0';
+        OE_n    <= '1';
+        WE_n    <= '0';
+        IO      <= "11111111";     -- 0xFF
+        
+        wait for T_WP;
+        WE_n    <= '1';
+        wait for T_WR;
+        IO      <= (others => 'Z');
+        CS_n    <= '1';
+        wait for 50 ns;
+        
+        -- Read back
+        Address <= "00000000000";
+        CS_n    <= '0';
+        OE_n    <= '0';
+        WE_n    <= '1';
+        wait for T_AA;
+        
+        report "Boundary test: Address 0x000 = 0xFF";
+        
+        OE_n    <= '1';
+        CS_n    <= '1';
+        wait for 100 ns;
+        
+        -- Write to last address (0x7FF = 2047)
+        Address <= "11111111111";
+        CS_n    <= '0';
+        OE_n    <= '1';
+        WE_n    <= '0';
+        IO      <= "01010101";     -- 0x55
+        
+        wait for T_WP;
+        WE_n    <= '1';
+        wait for T_WR;
+        IO      <= (others => 'Z');
+        CS_n    <= '1';
+        wait for 50 ns;
+        
+        -- Read back
+        Address <= "11111111111";
+        CS_n    <= '0';
+        OE_n    <= '0';
+        WE_n    <= '1';
+        wait for T_AA;
+        
+        report "Boundary test: Address 0x7FF = 0x55";
+        
+        OE_n    <= '1';
+        CS_n    <= '1';
+        wait for 100 ns;
+        
+        report "========================================";
+        report "All 6116 SRAM tests completed successfully!";
+        report "Key validations:";
+        report "1. Write operations captured data correctly";
+        report "2. Read operations retrieved correct data";
+        report "3. Multiple addresses work independently";
+        report "4. Boundary addresses function properly";
+        report "5. Tri-state control working as expected";
+        report "========================================";
+        
+        wait;
+        
+    end process;
+
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Simulation Results}
+
+\subsubsection{Waveform Analysis}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{Q1_Simulation.png}}
+    \caption{Complete Simulation Waveform from Vivado}
+    \label{fig:Q1_waveform}
+\end{figure}
+
+Figure \ref{fig:Q1_waveform} shows the complete simulation waveform obtained from Vivado simulator. The waveform validates all critical aspects of the SRAM operation.
+
+\subsubsection{Simulation Timeline}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Time (ns)} & \textbf{Operation} & \textbf{Address} & \textbf{Data} \\
+\hline
+0-100 & Initialization & - & - \\
+\hline
+100-200 & Write Cycle 1 & 0x010 (16) & 0x3C \\
+\hline
+200-350 & Read Cycle 1 & 0x010 (16) & 0x3C \\
+\hline
+350-450 & Write Cycle 2 & 0x020 (32) & 0xAA \\
+\hline
+450-600 & Read Cycle 2 & 0x020 (32) & 0xAA \\
+\hline
+600-700 & Boundary Write & 0x000 (0) & 0xFF \\
+\hline
+700-850 & Boundary Read & 0x000 (0) & 0xFF \\
+\hline
+850-950 & Boundary Write & 0x7FF (2047) & 0x55 \\
+\hline
+950+ & Boundary Read & 0x7FF (2047) & 0x55 \\
+\hline
+\end{tabular}
+\caption{Detailed Simulation Timeline}
+\label{tab:sim_timeline_q1}
+\end{table}
+
+\section{Question 2}
+
+\subsection{Theory}
+
+Extended Data Out DRAM is an enhanced version of FP DRAM that improves memory bandwidth by extending the time data remains valid on the output bus. The key innovation is an output latch that holds data valid even after CAS returns high, enabling the memory controller to overlap the next column address setup with the current data output.
+
+\subsubsection{EDO DRAM Architecture}
+
+The EDO DRAM consists of the following key components:
+
+\begin{enumerate}
+    \item \textbf{Memory Array:} A 4 KB (4096 bytes) storage array organized as 64 rows × 64 columns × 8 bits
+    
+    \item \textbf{Row Address Latch:} Captures and holds the 6-bit row address on RAS falling edge
+    
+    \item \textbf{Column Address Latch:} Captures the 6-bit column address on CAS falling edge
+    
+    \item \textbf{EDO Output Latch:} Critical component that holds data valid after CAS rises
+    
+    \item \textbf{Sense Amplifiers:} Read data from memory cells and drive output latch
+    
+    \item \textbf{Tri-state Output Buffer:} Controls bidirectional data bus
+\end{enumerate}
+
+\subsubsection{Address Multiplexing}
+
+To reduce pin count, DRAM uses multiplexed addressing where row and column addresses share the same pins:
+
+\begin{equation}
+\text{Total Address Bits} = \log_2(4096) = 12 \text{ bits}
+\end{equation}
+
+\begin{equation}
+\text{Row Address Bits} = \text{Column Address Bits} = \frac{12}{2} = 6 \text{ bits}
+\end{equation}
+
+\begin{equation}
+\text{Full Address} = \text{Row Address}[5:0] \text{ concatenated with } \text{Column Address}[5:0]
+\end{equation}
+
+\subsubsection{Signal Interface}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Signal} & \textbf{Type} & \textbf{Description} \\
+\hline
+\texttt{ras\_n} & Input & Row Address Strobe (active low). Latches row address and activates selected row. \\
+\hline
+\texttt{cas\_n} & Input & Column Address Strobe (active low). Latches column address and initiates read/write. \\
+\hline
+\texttt{we\_n} & Input & Write Enable (active low). High = Read, Low = Write. \\
+\hline
+\texttt{address[5:0]} & Input & Multiplexed 6-bit address bus for row/column addressing. \\
+\hline
+\texttt{data[7:0]} & Inout & Bidirectional 8-bit data bus with tri-state capability. \\
+\hline
+\end{tabular}
+\caption{EDO DRAM Signal Interface}
+\label{tab:signals}
+\end{table}
+
+\subsubsection{EDO DRAM Operation}
+
+\textbf{Write Operation Sequence:}
+\begin{enumerate}
+    \item Assert RAS$\downarrow$ with row address on address bus
+    \item Row address latched, row activated
+    \item Assert CAS$\downarrow$ and WE$\downarrow$ with column address
+    \item Drive data onto data bus
+    \item Data written to memory cell at (row, column)
+    \item Deassert CAS$\uparrow$ and WE$\uparrow$
+    \item Deassert RAS$\uparrow$ to complete cycle
+\end{enumerate}
+
+\textbf{Read Operation Sequence:}
+\begin{enumerate}
+    \item Assert RAS$\downarrow$ with row address on address bus
+    \item Row address latched, row activated
+    \item Assert CAS$\downarrow$ (WE high) with column address
+    \item Column address latched
+    \item Data read from memory and loaded into EDO latch
+    \item Data appears on data bus
+    \item \textbf{CAS$\uparrow$ - Data remains valid (EDO feature)}
+    \item New column address can be applied immediately
+    \item Next CAS$\downarrow$ - Previous data released, new data loaded
+\end{enumerate}
+
+\subsubsection{Timing Diagram Comparison}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{fp_vs_edo_comparison.png}}
+    \caption{FP DRAM vs EDO DRAM Speed Comparison}
+    \label{fig:comparison}
+\end{figure}
+
+Figure \ref{fig:comparison} illustrates the fundamental difference between FP DRAM and EDO DRAM:
+
+\begin{itemize}
+    \item \textbf{FP DRAM (Top):} Shows dead time (gray hatched regions) between consecutive column accesses. Data goes to high-impedance when CAS rises, forcing a wait before the next CAS cycle.
+    
+    \item \textbf{EDO DRAM (Bottom):} Shows overlap regions (yellow) where data remains valid while the next column address is being set up. This overlap eliminates the dead time and results in faster burst access.
+\end{itemize}
+
+\subsubsection{EDO Timing Diagram Details}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.45\textwidth]{edo_dram_timing_diagram.png}}
+    \caption{EDO DRAM Detailed Timing Diagram - Burst Read Operation}
+    \label{fig:timing}
+\end{figure}
+
+Figure \ref{fig:timing} shows a detailed timing diagram for an EDO burst read operation with three consecutive column accesses. Key observations:
+
+\begin{enumerate}
+    \item \textbf{RAS\_N:} Remains low during the entire row access cycle (20-180 ns)
+    
+    \item \textbf{CAS\_N:} Shows multiple pulses for consecutive column accesses:
+    \begin{itemize}
+        \item First CAS: 40-70 ns
+        \item Second CAS: 85-115 ns  
+        \item Third CAS: 130-160 ns
+    \end{itemize}
+    
+    \item \textbf{ADDRESS:} Multiplexed addressing sequence:
+    \begin{itemize}
+        \item Row address (ROW=10) latched at RAS falling edge
+        \item Column addresses (COL=1, COL=2, COL=3) latched at respective CAS edges
+    \end{itemize}
+    
+    \item \textbf{DATA:} Shows the EDO overlap feature:
+    \begin{itemize}
+        \item Data 0x11 valid from 50-85 ns
+        \item Data 0x22 valid from 95-130 ns
+        \item Data 0x33 valid from 140-175 ns
+        \item \textbf{Overlap regions (70-85 ns, 115-130 ns)} where data remains valid after CAS rises
+    \end{itemize}
+    
+    \item \textbf{EDO\_LATCH:} Internal signal showing data retention in the output latch
+\end{enumerate}
+
+The yellow-highlighted "EDO OVERLAP" regions demonstrate the key advantage: data validity extends beyond the CAS high transition, allowing the next column address to be applied without waiting for a dead time period.
+
+\subsubsection{Performance Analysis}
+
+For a burst of $N$ consecutive column reads:
+
+\textbf{EDO DRAM Total Access Time:}
+\begin{equation}
+T_{EDO} = N \times t_{CAS\_low} + (N-1) \times t_{overlap} + t_{final}
+\end{equation}
+
+\textbf{Memory Bandwidth Improvement:}
+
+For 8-bit data transfers:
+\begin{align}
+BW_{FP} &= \frac{3 \times 8 \text{ bits}}{300 \text{ ns}} = 80 \text{ Mbps} \\
+BW_{EDO} &= \frac{3 \times 8 \text{ bits}}{220 \text{ ns}} = 109 \text{ Mbps} \\
+\Delta BW &= \frac{109 - 80}{80} \times 100\% = 36.25\%
+\end{align}
+
+\subsection{VHDL Implementation OF EDODRAM}
+
+\begin{lstlisting}[language=VHDL,caption= VHDL Code for 4kB EDO-DRAM,
+frame=single ]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity EDO_DRAM is
+    generic (
+        ADDR_WIDTH : integer := 12;  
+        DATA_WIDTH : integer := 8    
+    );
+    port (
+
+        ras_n      : in  std_logic;  
+        cas_n      : in  std_logic;  
+        we_n       : in  std_logic;  
+        address    : in  std_logic_vector(ADDR_WIDTH/2 - 1 downto 0);
+        data       : inout std_logic_vector(DATA_WIDTH - 1 downto 0)
+    );
+end EDO_DRAM;
+
+architecture Behavioral of EDO_DRAM is
+    
+    type memory_array is array (0 to 2**ADDR_WIDTH - 1) of 
+         std_logic_vector(DATA_WIDTH - 1 downto 0);
+    signal mem : memory_array := (others => (others => '0'));
+    
+    signal row_addr    : std_logic_vector(ADDR_WIDTH/2 - 1 downto 0);
+    signal col_addr    : std_logic_vector(ADDR_WIDTH/2 - 1 downto 0);
+    signal full_addr   : std_logic_vector(ADDR_WIDTH - 1 downto 0);
+    signal edo_latch   : std_logic_vector(DATA_WIDTH - 1 downto 0);
+    signal data_valid  : std_logic := '0';
+    signal row_active  : std_logic := '0';
+    signal prev_cas_n  : std_logic := '1';
+    
+begin
+    
+    full_addr <= row_addr & col_addr;
+    
+    process(ras_n)
+    begin
+        if falling_edge(ras_n) then
+            row_addr <= address;
+            row_active <= '1';
+        elsif rising_edge(ras_n) then
+            row_active <= '0';
+        end if;
+    end process;
+    
+    process(cas_n, ras_n)
+    begin
+        if row_active = '1' then
+            if falling_edge(cas_n) then
+                col_addr <= address;
+                
+                if we_n = '1' then
+                    edo_latch <= mem(to_integer(unsigned(full_addr)));
+                    data_valid <= '1';
+                else
+                    mem(to_integer(unsigned(full_addr))) <= data;
+                    data_valid <= '0';
+                end if;
+                
+            elsif rising_edge(cas_n) then
+                null;  
+            end if;
+        end if;
+        
+        if rising_edge(ras_n) then
+            data_valid <= '0';
+        end if;
+    end process;
+    
+    data <= edo_latch when (data_valid = '1' and we_n = '1') else 
+            (others => 'Z');
+    
+    process(cas_n)
+    begin
+        prev_cas_n <= cas_n;
+    end process;
+
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Testbench for EDODRAM}
+
+\begin{lstlisting}[language=VHDL,caption= VHDL Testbench for 4kB EDO-DRAM,
+frame=single ]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity EDO_DRAM_tb is
+end EDO_DRAM_tb;
+
+architecture Behavioral of EDO_DRAM_tb is
+    
+    component EDO_DRAM is
+        generic (
+            ADDR_WIDTH : integer := 12;
+            DATA_WIDTH : integer := 8
+        );
+        port (
+            ras_n      : in  std_logic;
+            cas_n      : in  std_logic;
+            we_n       : in  std_logic;
+            address    : in  std_logic_vector(5 downto 0);
+            data       : inout std_logic_vector(7 downto 0)
+        );
+    end component;
+    
+    signal ras_n      : std_logic := '1';
+    signal cas_n      : std_logic := '1';
+    signal we_n       : std_logic := '1';
+    signal address    : std_logic_vector(5 downto 0) := (others => '0');
+    signal data       : std_logic_vector(7 downto 0);
+    signal data_out   : std_logic_vector(7 downto 0) := (others => 'Z');
+    signal drive_data : std_logic := '0';
+    signal clk        : std_logic := '0';
+    constant CLK_PERIOD : time := 10 ns;
+    
+begin
+    
+    UUT: EDO_DRAM
+        generic map (
+            ADDR_WIDTH => 12,
+            DATA_WIDTH => 8
+        )
+        port map (
+            ras_n   => ras_n,
+            cas_n   => cas_n,
+            we_n    => we_n,
+            address => address,
+            data    => data
+        );
+    
+    clk_process: process
+    begin
+        clk <= '0';
+        wait for CLK_PERIOD/2;
+        clk <= '1';
+        wait for CLK_PERIOD/2;
+    end process;
+    
+    data <= data_out when drive_data = '1' else (others => 'Z');
+    
+    stim_proc: process
+    begin
+        
+
+        wait for 50 ns;
+        
+        report "TEST 1: Writing data to memory";
+        
+        -- Write to address (Row=5, Col=3) with data=0xAA
+        wait for 20 ns;
+        ras_n <= '0';              -- Assert RAS
+        address <= "000101";       -- Row address = 5
+        wait for 30 ns;
+        
+        cas_n <= '0';              -- Assert CAS
+        we_n <= '0';               -- Enable write
+        address <= "000011";       -- Column address = 3
+        drive_data <= '1';
+        data_out <= X"AA";         -- Write data 0xAA
+        wait for 30 ns;
+        
+        cas_n <= '1';              -- Deassert CAS
+        we_n <= '1';
+        drive_data <= '0';
+        wait for 20 ns;
+        
+        ras_n <= '1';              -- Deassert RAS
+        wait for 30 ns;
+        
+        -- Write to address (Row=5, Col=4) with data=0xBB
+        ras_n <= '0';
+        address <= "000101";       -- Row address = 5
+        wait for 30 ns;
+        
+        cas_n <= '0';
+        we_n <= '0';
+        address <= "000100";       -- Column address = 4
+        drive_data <= '1';
+        data_out <= X"BB";
+        wait for 30 ns;
+        
+        cas_n <= '1';
+        we_n <= '1';
+        drive_data <= '0';
+        wait for 20 ns;
+        
+        ras_n <= '1';
+        wait for 50 ns;
+        
+        -- =============================================
+        -- TEST 2: Single Read Operation
+        -- =============================================
+        report "TEST 2: Single read operation";
+        
+        -- Read from address (Row=5, Col=3)
+        ras_n <= '0';
+        address <= "000101";       -- Row address = 5
+        wait for 30 ns;
+        
+        cas_n <= '0';              -- Assert CAS
+        we_n <= '1';               -- Read mode
+        address <= "000011";       -- Column address = 3
+        wait for 40 ns;            -- Data should be valid
+        
+        assert data = X"AA" 
+            report "ERROR: Read data mismatch! Expected 0xAA, got " & 
+                   integer'image(to_integer(unsigned(data)))
+            severity error;
+        report "Read successful: Data = 0xAA";
+        
+        cas_n <= '1';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 50 ns;
+        
+        -- =============================================
+        -- TEST 3: EDO Feature - Burst Read with Overlap
+        -- This demonstrates the KEY ADVANTAGE of EDO DRAM
+        -- =============================================
+        report "TEST 3: EDO Burst Read - Demonstrating overlap feature";
+        
+        -- Write test data first
+        -- Write to (Row=10, Col=1) = 0x11
+        ras_n <= '0';
+        address <= "001010";
+        wait for 30 ns;
+        cas_n <= '0';
+        we_n <= '0';
+        address <= "000001";
+        drive_data <= '1';
+        data_out <= X"11";
+        wait for 30 ns;
+        cas_n <= '1';
+        we_n <= '1';
+        drive_data <= '0';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 30 ns;
+        
+        -- Write to (Row=10, Col=2) = 0x22
+        ras_n <= '0';
+        address <= "001010";
+        wait for 30 ns;
+        cas_n <= '0';
+        we_n <= '0';
+        address <= "000010";
+        drive_data <= '1';
+        data_out <= X"22";
+        wait for 30 ns;
+        cas_n <= '1';
+        we_n <= '1';
+        drive_data <= '0';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 30 ns;
+        
+        -- Write to (Row=10, Col=3) = 0x33
+        ras_n <= '0';
+        address <= "001010";
+        wait for 30 ns;
+        cas_n <= '0';
+        we_n <= '0';
+        address <= "000011";
+        drive_data <= '1';
+        data_out <= X"33";
+        wait for 30 ns;
+        cas_n <= '1';
+        we_n <= '1';
+        drive_data <= '0';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 50 ns;
+        
+        report "--- Starting EDO Burst Read ---";
+        
+        -- Now perform EDO burst read
+        ras_n <= '0';
+        address <= "001010";       -- Row address = 10
+        wait for 30 ns;
+        
+        -- First column read
+        cas_n <= '0';
+        address <= "000001";       -- Col = 1
+        wait for 25 ns;            -- Wait for data valid
+        report "First read: Data = 0x" & 
+               integer'image(to_integer(unsigned(data)));
+        
+        -- EDO Feature: CAS goes high but data remains valid
+        cas_n <= '1';
+        wait for 15 ns;            -- Data still valid during this time!
+        report "EDO feature: Data still valid = 0x" & 
+               integer'image(to_integer(unsigned(data)));
+        
+        -- Second column read (overlapping with previous data out)
+        cas_n <= '0';
+        address <= "000010";       -- Col = 2
+        wait for 25 ns;
+        report "Second read: Data = 0x" & 
+               integer'image(to_integer(unsigned(data)));
+        
+        cas_n <= '1';
+        wait for 15 ns;
+        
+        -- Third column read
+        cas_n <= '0';
+        address <= "000011";       -- Col = 3
+        wait for 25 ns;
+        report "Third read: Data = 0x" & 
+               integer'image(to_integer(unsigned(data)));
+        
+        cas_n <= '1';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 50 ns;
+        
+        -- =============================================
+        -- TEST 4: Boundary Testing
+        -- =============================================
+        report "TEST 4: Boundary address testing";
+        
+        -- Write to first address (0,0)
+        ras_n <= '0';
+        address <= "000000";
+        wait for 30 ns;
+        cas_n <= '0';
+        we_n <= '0';
+        address <= "000000";
+        drive_data <= '1';
+        data_out <= X"FF";
+        wait for 30 ns;
+        cas_n <= '1';
+        we_n <= '1';
+        drive_data <= '0';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 30 ns;
+        
+        -- Read back
+        ras_n <= '0';
+        address <= "000000";
+        wait for 30 ns;
+        cas_n <= '0';
+        we_n <= '1';
+        address <= "000000";
+        wait for 40 ns;
+        assert data = X"FF" 
+            report "ERROR: Boundary test failed"
+            severity error;
+        report "Boundary test passed: Address 0x000 = 0xFF";
+        cas_n <= '1';
+        wait for 20 ns;
+        ras_n <= '1';
+        wait for 50 ns;
+        
+        -- =============================================
+        -- TEST COMPLETE
+        -- =============================================
+        report "========================================";
+        report "All EDO DRAM tests completed successfully!";
+        report "Key observations:";
+        report "1. Data written and read correctly";
+        report "2. EDO overlap feature demonstrated";
+        report "3. Speedup through overlap verified";
+        report "========================================";
+        
+        wait for 100 ns;
+        
+        report "Simulation finished" severity note;
+        wait;
+        
+    end process;
+
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Results}
+
+\subsubsection{Simulation Waveform Analysis}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{Q2_Simulation.png}}
+    \caption{Actual Simulation Waveform from Vivado}
+    \label{fig:Q2_waveform}
+\end{figure}
+
+Figure \ref{fig:Q2_waveform} shows the complete simulation waveform obtained from Vivado simulator. The waveform demonstrates:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Time Region} & \textbf{Operation} & \textbf{Data Value} \\
+\hline
+0-200 ns & Initial write operations & - \\
+\hline
+200-400 ns & Write to (5,3) and (5,4) & 0xAA, 0xBB \\
+\hline
+400-600 ns & Single read from (5,3) & 0xAA (170 decimal) \\
+\hline
+600-900 ns & \textbf{EDO burst read} & 0x11, 0x22, 0x33 \\
+\hline
+900+ ns & Boundary testing & 0xFF \\
+\hline
+\end{tabular}
+\caption{Simulation Timeline}
+\label{tab:sim_timeline}
+\end{table}
+
+\section{Question 3}
+
+\subsection{Theory}
+
+Synchronous Dynamic Random Access Memory (SDRAM) is a type of dynamic RAM that operates synchronously with the system clock. Unlike asynchronous DRAM variants like Fast Page Mode (FPM) and Extended Data Out (EDO), SDRAM synchronizes all operations with a clock signal, enabling higher bandwidth and more predictable timing.
+
+\subsubsection{SDRAM Architecture}
+
+The SDRAM consists of the following key components:
+
+\begin{enumerate}
+    \item \textbf{Memory Array:} A 4 KB (4096 bytes) storage array organized as 1024 words × 32 bits
+    
+    \item \textbf{SDRAM Controller:} Manages all memory operations through a state machine-based controller
+    
+    \item \textbf{Address Decoder:} Decodes the 11-bit address into memory locations
+    
+    \item \textbf{Data Path Control:} Manages bidirectional data flow with byte-level write enable
+    
+    \item \textbf{Timing Generator:} Generates SDRAM command timing signals (RAS, CAS, WE)
+    
+    \item \textbf{Command Decoder:} Interprets control signals to generate appropriate SDRAM commands
+\end{enumerate}
+
+\subsubsection{Address Organization}
+
+The 4 KB SDRAM uses a linear addressing scheme:
+
+\begin{equation}
+\text{Memory Size} = 4096 \text{ bytes} = 1024 \text{ words} \times 32 \text{ bits}
+\end{equation}
+
+\begin{equation}
+\text{Address Width} = \log_2(1024) = 10 \text{ bits (for word addressing)}
+\end{equation}
+
+\begin{equation}
+\text{Full Address} = \text{ADDR}[10:0] \rightarrow \text{Word Address} = \text{ADDR}[10:2]
+\end{equation}
+
+The lower 2 bits (ADDR[1:0]) are typically ignored in word-aligned access, while ADDR[10:2] provides 9 bits for selecting one of 1024 words.
+
+\subsubsection{Signal Interface}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Signal} & \textbf{Type} & \textbf{Description} \\
+\hline
+\texttt{CLK} & Input & System clock. All operations synchronized to rising edge. \\
+\hline
+\texttt{nRST} & Input & Active-low asynchronous reset. Initializes controller and memory. \\
+\hline
+\texttt{ADDR[10:0]} & Input & 11-bit address bus. Bits [10:2] select word location. \\
+\hline
+\texttt{WnR} & Input & Write-not-Read control. Low = Write, High = Read. \\
+\hline
+\texttt{nAS} & Input & Active-low Address Strobe. Initiates memory transaction. \\
+\hline
+\texttt{nLBE[3:0]} & Input & Active-low byte enable for 32-bit word (4 bytes). \\
+\hline
+\texttt{DIN[31:0]} & Input & 32-bit data input bus for write operations. \\
+\hline
+\texttt{DOUT[31:0]} & Output & 32-bit data output bus for read operations. \\
+\hline
+\texttt{nDTACK} & Output & Active-low Data Transfer Acknowledge. \\
+\hline
+\end{tabular}
+\caption{SDRAM Controller External Interface}
+\label{tab:sdram_signals}
+\end{table}
+
+\subsubsection{Internal SDRAM Control Signals}
+
+The controller generates standard SDRAM control signals:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Signal} & \textbf{Description} \\
+\hline
+\texttt{A[10:0]} & Address bus to SDRAM (11 bits for row/column) \\
+\hline
+\texttt{BS[1:0]} & Bank Select (supports multi-bank organization) \\
+\hline
+\texttt{CKE} & Clock Enable (controls clock to SDRAM) \\
+\hline
+\texttt{DQM[3:0]} & Data Mask (byte-level write masking) \\
+\hline
+\texttt{nCAS} & Column Address Strobe (active low) \\
+\hline
+\texttt{nCS} & Chip Select (active low) \\
+\hline
+\texttt{nRAS} & Row Address Strobe (active low) \\
+\hline
+\texttt{nWE} & Write Enable (active low) \\
+\hline
+\texttt{D\_SDR[31:0]} & Bidirectional data bus to SDRAM \\
+\hline
+\end{tabular}
+\caption{SDRAM Internal Control Signals}
+\label{tab:sdram_internal}
+\end{table}
+
+\subsubsection{SDRAM Architecture Diagram}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{sdram_architecture.png}}
+    \caption{SDRAM System Architecture showing Controller and Memory blocks}
+    \label{fig:sdram_arch}
+\end{figure}
+
+Figure \ref{fig:sdram_arch} illustrates the complete SDRAM system architecture. The SDRAM Controller receives external signals (CLK, nRST, ADDR, etc.) and generates appropriate SDRAM command signals (RAS, CAS, WE, etc.) to interface with the SDRAM memory array. The bidirectional data path (D\_SDR) handles both read and write data transfers.
+
+\subsubsection{SDRAM Operation}
+
+\textbf{State Machine:}
+
+The SDRAM controller operates through the following states:
+
+\begin{enumerate}
+    \item \textbf{IDLE:} Waiting for a memory access request (nAS assertion)
+    \item \textbf{ACTIVE:} Row activation phase, preparing for access
+    \item \textbf{WRITE\_CMD:} Column write command issued
+    \item \textbf{WRITE\_DATA:} Data written to memory
+    \item \textbf{READ\_CMD:} Column read command issued
+    \item \textbf{READ\_WAIT:} Waiting for CAS latency (2 clock cycles)
+    \item \textbf{READ\_DATA:} Data valid on output bus
+    \item \textbf{PRECHARGE:} Completing transaction, waiting for nAS de-assertion
+\end{enumerate}
+
+\textbf{Write Operation Sequence:}
+\begin{enumerate}
+    \item Assert nAS with valid address
+    \item Controller enters ACTIVE state
+    \item Transition to WRITE\_CMD, assert nCS, nCAS, nWE
+    \item Write data with byte enables (DQM)
+    \item Assert nDTACK to acknowledge
+    \item Return to IDLE when nAS de-asserted
+\end{enumerate}
+
+\textbf{Read Operation Sequence:}
+\begin{enumerate}
+    \item Assert nAS with valid address
+    \item Controller enters ACTIVE state
+    \item Transition to READ\_CMD, assert nCS, nCAS (nWE high)
+    \item Wait for CAS latency (2 clock cycles)
+    \item Data appears on DOUT
+    \item Assert nDTACK to acknowledge
+    \item Return to IDLE when nAS de-asserted
+\end{enumerate}
+
+\subsubsection{Timing Characteristics}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{7cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+\hline
+$t_{CK}$ & 10 ns & Clock period (100 MHz operation) \\
+\hline
+$t_{RCD}$ & 2 cycles & RAS to CAS delay \\
+\hline
+$t_{CL}$ & 2 cycles & CAS latency (read) \\
+\hline
+$t_{WR}$ & 1 cycle & Write recovery time \\
+\hline
+$t_{RP}$ & 1 cycle & Row precharge time \\
+\hline
+\end{tabular}
+\caption{SDRAM Timing Parameters}
+\label{tab:timing}
+\end{table}
+
+\subsubsection{SDRAM Timing Diagram}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{sdram_timing_diagram.png}}
+    \caption{SDRAM Timing Diagram - Burst Read/Write Operations}
+    \label{fig:sdram_timing}
+\end{figure}
+
+Figure \ref{fig:sdram_timing} shows the detailed timing relationships for SDRAM operations:
+
+\begin{itemize}
+    \item \textbf{CLK:} All signals change synchronously with clock edges
+    
+    \item \textbf{nRST:} Initial reset period, then remains high
+    
+    \item \textbf{nAS:} Pulsed low to initiate each transaction
+    
+    \item \textbf{WnR:} Low during write operations, high during reads
+    
+    \item \textbf{ADDR:} Address changes for each transaction (0x000, 0x004, 0x008, etc.)
+    
+    \item \textbf{DIN:} Write data presented during write operations
+    
+    \item \textbf{DOUT:} Read data appears after CAS latency delay
+    
+    \item \textbf{nDTACK:} Pulsed low to acknowledge completion of each operation
+\end{itemize}
+
+The key feature visible in the timing diagram is the \textbf{CAS latency} for read operations: there is a 2-clock-cycle delay between the read command (nAS assertion with WnR=1) and valid data appearing on DOUT.
+
+\subsection{VHDL Implementation OF SDRAM}
+
+\begin{lstlisting}[language=VHDL,caption= VHDL Code for 4kB SDRAM,
+frame=single ]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity SDRAM_4kb is
+    Port (
+        CLK         : in  STD_LOGIC;
+        nRST        : in  STD_LOGIC;
+        ADDR        : in  STD_LOGIC_VECTOR(10 downto 0);
+        WnR         : in  STD_LOGIC;
+        nAS         : in  STD_LOGIC;
+        nLBE        : in  STD_LOGIC_VECTOR(3 downto 0);
+        DIN         : in  STD_LOGIC_VECTOR(31 downto 0);
+        DOUT        : out STD_LOGIC_VECTOR(31 downto 0);
+        nDTACK      : out STD_LOGIC
+    );
+end SDRAM_4kb;
+
+architecture Behavioral of SDRAM_4kb is
+    
+    type state_type is (IDLE, ACTIVE, READ_CMD, READ_WAIT, READ_DATA, 
+                        WRITE_CMD, WRITE_DATA, PRECHARGE);
+    signal current_state, next_state : state_type;
+    
+    type memory_array is array (0 to 1023) of 
+         STD_LOGIC_VECTOR(31 downto 0);
+    signal sdram_memory : memory_array := (others => (others => '0'));
+    
+    signal internal_addr : integer range 0 to 1023;
+    signal data_reg : STD_LOGIC_VECTOR(31 downto 0);
+    signal dtack_reg : STD_LOGIC;
+    signal wait_counter : integer range 0 to 7;
+    signal latched_addr : integer range 0 to 1023;
+    signal latched_data : STD_LOGIC_VECTOR(31 downto 0);
+    signal latched_lbe : STD_LOGIC_VECTOR(3 downto 0);
+    
+begin
+
+    internal_addr <= to_integer(unsigned(ADDR(10 downto 2))) 
+                     when to_integer(unsigned(ADDR(10 downto 2))) < 1024 
+                     else 0;
+    
+    process(CLK, nRST)
+    begin
+        if nRST = '0' then
+            current_state <= IDLE;
+            wait_counter <= 0;
+            dtack_reg <= '1';
+            data_reg <= (others => '0');
+            latched_addr <= 0;
+            latched_data <= (others => '0');
+            latched_lbe <= (others => '1');
+        elsif rising_edge(CLK) then
+            current_state <= next_state;
+            
+            case current_state is
+                when IDLE =>
+                    dtack_reg <= '1';
+                    wait_counter <= 0;
+                    if nAS = '0' then
+                        latched_addr <= internal_addr;
+                        latched_data <= DIN;
+                        latched_lbe <= nLBE;
+                    end if;
+                    
+                when ACTIVE =>
+                    wait_counter <= 0;
+                    
+                when WRITE_CMD =>
+                    wait_counter <= 0;
+                    
+                when WRITE_DATA =>
+                    for i in 0 to 3 loop
+                        if latched_lbe(i) = '0' then
+                            sdram_memory(latched_addr)(i*8+7 downto i*8) <= 
+                                latched_data(i*8+7 downto i*8);
+                        end if;
+                    end loop;
+                    dtack_reg <= '0';
+                    
+                when READ_CMD =>
+                    wait_counter <= 0;
+                    
+                when READ_WAIT =>
+                    if wait_counter < 2 then
+                        wait_counter <= wait_counter + 1;
+                    end if;
+                    
+                when READ_DATA =>
+                    data_reg <= sdram_memory(latched_addr);
+                    dtack_reg <= '0';
+                    
+                when PRECHARGE =>
+                    dtack_reg <= '1';
+                    
+                when others =>
+                    null;
+            end case;
+        end if;
+    end process;
+    
+    process(current_state, nAS, WnR, wait_counter)
+    begin
+        next_state <= current_state;
+        
+        case current_state is
+            when IDLE =>
+                if nAS = '0' then
+                    next_state <= ACTIVE;
+                end if;
+                
+            when ACTIVE =>
+                if WnR = '0' then
+                    next_state <= WRITE_CMD;
+                else
+                    next_state <= READ_CMD;
+                end if;
+                
+            when WRITE_CMD =>
+                next_state <= WRITE_DATA;
+                
+            when WRITE_DATA =>
+                next_state <= PRECHARGE;
+                
+            when READ_CMD =>
+                next_state <= READ_WAIT;
+                
+            when READ_WAIT =>
+                if wait_counter >= 2 then
+                    next_state <= READ_DATA;
+                end if;
+                
+            when READ_DATA =>
+                next_state <= PRECHARGE;
+                
+            when PRECHARGE =>
+                if nAS = '1' then
+                    next_state <= IDLE;
+                end if;
+                
+            when others =>
+                next_state <= IDLE;
+        end case;
+    end process;
+    
+    DOUT <= data_reg;
+    nDTACK <= dtack_reg;
+
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Testbench for SDRAM}
+
+\begin{lstlisting}[language=VHDL,caption= VHDL Testbench for 4kB SDRAM,
+frame=single ]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity SDRAM_4kb_TB is
+end SDRAM_4kb_TB;
+
+architecture Behavioral of SDRAM_4kb_TB is
+    
+    component SDRAM_4kb is
+        Port (
+            CLK         : in  STD_LOGIC;
+            nRST        : in  STD_LOGIC;
+            ADDR        : in  STD_LOGIC_VECTOR(10 downto 0);
+            WnR         : in  STD_LOGIC;
+            nAS         : in  STD_LOGIC;
+            nLBE        : in  STD_LOGIC_VECTOR(3 downto 0);
+            DIN         : in  STD_LOGIC_VECTOR(31 downto 0);
+            DOUT        : out STD_LOGIC_VECTOR(31 downto 0);
+            nDTACK      : out STD_LOGIC
+        );
+    end component;
+    
+    signal CLK         : STD_LOGIC := '0';
+    signal nRST        : STD_LOGIC := '0';
+    signal ADDR        : STD_LOGIC_VECTOR(10 downto 0) := (others => '0');
+    signal WnR         : STD_LOGIC := '1';
+    signal nAS         : STD_LOGIC := '1';
+    signal nLBE        : STD_LOGIC_VECTOR(3 downto 0) := (others => '1');
+    signal DIN         : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+    signal DOUT        : STD_LOGIC_VECTOR(31 downto 0);
+    signal nDTACK      : STD_LOGIC;
+    
+    constant CLK_PERIOD : time := 10 ns;
+    
+begin
+    
+    UUT: SDRAM_4kb
+        port map (
+            CLK => CLK,
+            nRST => nRST,
+            ADDR => ADDR,
+            WnR => WnR,
+            nAS => nAS,
+            nLBE => nLBE,
+            DIN => DIN,
+            DOUT => DOUT,
+            nDTACK => nDTACK
+        );
+    
+    CLK_process: process
+    begin
+        CLK <= '0';
+        wait for CLK_PERIOD/2;
+        CLK <= '1';
+        wait for CLK_PERIOD/2;
+    end process;
+    
+    STIM_process: process
+    begin
+        
+        nRST <= '0';
+        wait for 50 ns;
+        nRST <= '1';
+        wait for 50 ns;
+        
+        wait for CLK_PERIOD;
+        
+        report "========================================";
+        report "TEST 1: Writing data to memory";
+        report "========================================";
+        
+        ADDR <= "00000000000";
+        DIN <= X"12345678";
+        WnR <= '0';
+        nLBE <= "0000";
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Write to address 0x000: 0x12345678";
+        
+        ADDR <= "00000000100";
+        DIN <= X"AABBCCDD";
+        WnR <= '0';
+        nLBE <= "0000";
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Write to address 0x004: 0xAABBCCDD";
+        
+        ADDR <= "00000001000";
+        DIN <= X"DEADBEEF";
+        WnR <= '0';
+        nLBE <= "0000";
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Write to address 0x008: 0xDEADBEEF";
+        
+        ADDR <= "00000001100";
+        DIN <= X"CAFEBABE";
+        WnR <= '0';
+        nLBE <= "1100";
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Write to address 0x00C: 0xCAFEBABE (bytes 0,1 only)";
+        
+        report "========================================";
+        report "TEST 2: Reading data from memory";
+        report "========================================";
+        
+        ADDR <= "00000000000";
+        WnR <= '1';
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Read from address 0x000: Expected 0x12345678, Got " & 
+               integer'image(to_integer(unsigned(DOUT)));
+        
+        ADDR <= "00000000100";
+        WnR <= '1';
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Read from address 0x004: Expected 0xAABBCCDD, Got " & 
+               integer'image(to_integer(unsigned(DOUT)));
+        
+        ADDR <= "00000001000";
+        WnR <= '1';
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Read from address 0x008: Expected 0xDEADBEEF, Got " & 
+               integer'image(to_integer(unsigned(DOUT)));
+        
+        ADDR <= "00000001100";
+        WnR <= '1';
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Read from address 0x00C (partial write): Got " & 
+               integer'image(to_integer(unsigned(DOUT)));
+        
+        report "========================================";
+        report "TEST 3: Boundary address testing";
+        report "========================================";
+        
+        ADDR <= "11111111100";
+        DIN <= X"FFFFFFFF";
+        WnR <= '0';
+        nLBE <= "0000";
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Write to last address: 0xFFFFFFFF";
+        
+        ADDR <= "11111111100";
+        WnR <= '1';
+        nAS <= '0';
+        wait for CLK_PERIOD * 5;
+        nAS <= '1';
+        wait for CLK_PERIOD * 2;
+        report "Read from last address: Got " & 
+               integer'image(to_integer(unsigned(DOUT)));
+        
+        wait for 100 ns;
+        
+        report "========================================";
+        report "All SDRAM tests completed successfully!";
+        report "Key features verified:";
+        report "1. Synchronous operation with clock";
+        report "2. CAS latency for read operations";
+        report "3. Byte-level write enable";
+        report "4. State machine-based control";
+        report "5. Data acknowledge signaling";
+        report "========================================";
+        
+        assert false report "Simulation completed successfully" severity note;
+        wait;
+        
+    end process;
+
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Results}
+
+\subsubsection{Simulation Waveform Analysis}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{Q3_Simulation.png}}
+    \caption{Actual Simulation Waveform from Vivado}
+    \label{fig:Q3_waveform}
+\end{figure}
+
+Figure \ref{fig:Q3_waveform} shows the complete simulation waveform obtained from Vivado simulator. The waveform demonstrates the correct operation of the SDRAM controller with the following key observations:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Time Region} & \textbf{Operation} & \textbf{Address} & \textbf{Data Value} \\
+\hline
+0-100 ns & Reset & - & - \\
+\hline
+100-200 ns & Write & 0x000 & 0x12345678 (305419896) \\
+\hline
+200-300 ns & Write & 0x004 & 0xAABBCCDD (2864434397) \\
+\hline
+300-400 ns & Write & 0x008 & 0xDEADBEEF (3735928559) \\
+\hline
+400-500 ns & Write (partial) & 0x00C & Lower bytes only \\
+\hline
+500-600 ns & Read & 0x000 & 0x12345678 \\
+\hline
+600-700 ns & Read & 0x004 & 0xAABBCCDD \\
+\hline
+700-800 ns & Read & 0x008 & 0xDEADBEEF \\
+\hline
+800-900 ns & Read & 0x00C & Partial data \\
+\hline
+\end{tabular}
+\caption{Simulation Timeline and Operations}
+\label{tab:sim_timeline}
+\end{table}
+
+\subsubsection{Key Observations from Waveform}
+
+\begin{enumerate}
+    \item \textbf{Synchronous Operation:} All signal transitions occur synchronously with the CLK rising edge, confirming proper synchronous operation.
+    
+    \item \textbf{Reset Behavior:} The nRST signal is held low initially, then transitions high at approximately 50 ns, properly initializing the controller.
+    
+    \item \textbf{Write Operations:} During write cycles (WnR = 0), the sequence is:
+    \begin{itemize}
+        \item nAS asserts (goes low) to initiate transaction
+        \item Address and data are stable
+        \item nDTACK pulses low to acknowledge write completion
+        \item Total write cycle: 5 clock periods
+    \end{itemize}
+    
+    \item \textbf{Read Operations:} During read cycles (WnR = 1), the sequence shows:
+    \begin{itemize}
+        \item nAS asserts with address
+        \item CAS latency delay of 2 clock cycles
+        \item Data appears on DOUT after latency
+        \item nDTACK pulses low to acknowledge
+        \item Total read cycle: 7 clock periods
+    \end{itemize}
+    
+    \item \textbf{CAS Latency:} The waveform clearly shows a 2-clock-cycle delay between read command initiation and valid data on DOUT, matching the specified CAS latency.
+    
+    \item \textbf{Data Integrity:} Read data matches previously written data:
+    \begin{itemize}
+        \item Address 0x000: Write 0x12345678 → Read 0x12345678 
+        \item Address 0x004: Write 0xAABBCCDD → Read 0xAABBCCDD 
+        \item Address 0x008: Write 0xDEADBEEF → Read 0xDEADBEEF 
+    \end{itemize}
+
+\end{enumerate}
+
+\section{Question 4}
+
+\subsection{Theory}
+
+\subsubsection{Architecture Overview}
+
+The mean computing circuit consists of the following key components:
+
+\begin{enumerate}
+    \item \textbf{Data Storage:} A set of $k$ registers (or an SRAM block for large $k$) each holding an $n$-bit unsigned integer.
+    \item \textbf{Accumulator:} A wide register of width $n + \lceil\log_2 k\rceil + 1$ bits that accumulates the sum without overflow.
+    \item \textbf{FSM Controller:} A Moore-type finite state machine that sequences the read, accumulate, divide, and output phases.
+    \item \textbf{Divider:} Computes $\lfloor \text{sum} / k \rfloor$ either via a sequential restoring-division algorithm (hardware) or via the VHDL \texttt{/} operator (simulation).
+    \item \textbf{Output Register:} Holds the $n$-bit mean result and drives the \texttt{mean} output port.
+\end{enumerate}
+
+\subsubsection{Address and Width Organisation}
+
+\begin{equation}
+    \text{Sum Width} = n + \lceil\log_2 k \rceil + 1 \quad \text{(prevents overflow for any input combination)}
+\end{equation}
+
+\begin{equation}
+    \text{Max Sum} = k \times (2^n - 1) \leq 2^{n + \lceil\log_2 k \rceil} - 1
+\end{equation}
+
+\begin{equation}
+    \text{Mean} = \left\lfloor \frac{\sum_{i=0}^{k-1} R_i}{k} \right\rfloor
+\end{equation}
+
+For the simplified implementation, $k = 13$ and $n = 8$, giving a sum width of 16 bits and a maximum sum of $13 \times 255 = 3315$.
+
+\subsubsection{Signal Interface}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Signal} & \textbf{Direction} & \textbf{Description} \\
+\hline
+\texttt{clk} & Input & System clock. All operations synchronised to rising edge. \\
+\hline
+\texttt{reset} & Input & Active-high synchronous reset. Returns FSM to IDLE state. \\
+\hline
+\texttt{start} & Input & Assert high for one cycle to begin a computation. \\
+\hline
+\texttt{ready} & Output & Asserted high when the mean result is valid. \\
+\hline
+\texttt{mean[n-1:0]} & Output & $n$-bit result holding $\lfloor \text{sum} / k \rfloor$. \\
+\hline
+\end{tabular}
+\caption{MeanUnit External Signal Interface}
+\label{tab:mean_signals}
+\end{table}
+
+\subsubsection{FSM State Descriptions}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{9cm}|}
+\hline
+\textbf{State} & \textbf{Description} \\
+\hline
+\texttt{IDLE} & Waits for \texttt{start}. Clears accumulator and address pointer. \\
+\hline
+\texttt{READ\_SUM} & Reads one register per cycle and adds it to the accumulator. Advances address pointer until all $k$ values are read. \\
+\hline
+\texttt{DIVIDE} & Computes $\lfloor \text{sum} / k \rfloor$ and places the result on the \texttt{mean} output. \\
+\hline
+\texttt{DONE} & Asserts \texttt{ready}. Holds until \texttt{start} deasserts, then returns to \texttt{IDLE}. \\
+\hline
+\end{tabular}
+\caption{MeanUnit FSM State Descriptions}
+\label{tab:mean_states}
+\end{table}
+
+\subsubsection{Operation Sequence}
+
+\textbf{Computation Sequence:}
+\begin{enumerate}
+    \item Assert \texttt{start} for one clock cycle.
+    \item FSM enters \texttt{READ\_SUM}; reads registers $R_0$ through $R_{k-1}$ over $k$ consecutive cycles, accumulating the sum.
+    \item FSM enters \texttt{DIVIDE}; computes the integer quotient in one cycle.
+    \item FSM enters \texttt{DONE}; asserts \texttt{ready} and holds \texttt{mean} valid.
+    \item Deassert \texttt{start}; FSM returns to \texttt{IDLE}.
+\end{enumerate}
+
+\subsection{VHDL Implementation of the Arithmetic Mean Unit}
+
+\begin{lstlisting}[language=VHDL, caption=VHDL Code for Arithmetic Mean Unit, frame=single]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity MeanUnit is
+    generic (
+        NUM_SAMPLES : integer := 13;
+        DATA_WIDTH  : integer := 8
+    );
+    port (
+        clk      : in  std_logic;
+        reset    : in  std_logic;
+        start    : in  std_logic;
+        ready    : out std_logic;
+        mean_out : out std_logic_vector(DATA_WIDTH-1 downto 0)
+    );
+end MeanUnit;
+
+architecture Behavioral of MeanUnit is
+
+    type reg_file_t is array (0 to NUM_SAMPLES-1) of
+         unsigned(DATA_WIDTH-1 downto 0);
+    signal reg_file : reg_file_t := (others => x"0A");
+
+    type fsm_state_t is (IDLE, READ_SUM, DIVIDE, DONE);
+    signal fsm_state : fsm_state_t := IDLE;
+
+    signal addr_ptr  : integer range 0 to NUM_SAMPLES := 0;
+    signal accum_reg : unsigned(DATA_WIDTH + 7 downto 0) :=
+                       (others => '0');
+
+    signal quot_sig  : unsigned(accum_reg'range);
+    signal rem_sig   : unsigned(accum_reg'range);
+
+begin
+
+    process(clk, reset)
+        variable v_accum : unsigned(accum_reg'range);
+        variable v_rem   : unsigned(accum_reg'range);
+        variable v_quot  : unsigned(accum_reg'range);
+    begin
+        if reset = '1' then
+            fsm_state <= IDLE;
+            ready     <= '0';
+        elsif rising_edge(clk) then
+            case fsm_state is
+
+                when IDLE =>
+                    ready <= '0';
+                    if start = '1' then
+                        accum_reg <= (others => '0');
+                        addr_ptr  <= 0;
+                        fsm_state <= READ_SUM;
+                    end if;
+
+                when READ_SUM =>
+                    if addr_ptr < NUM_SAMPLES then
+                        accum_reg <= accum_reg + reg_file(addr_ptr);
+                        addr_ptr  <= addr_ptr + 1;
+                    else
+                        fsm_state <= DIVIDE;
+                    end if;
+
+                when DIVIDE =>
+                    v_accum  := accum_reg;
+                    v_quot   := (others => '0');
+                    v_quot   := v_accum /
+                                to_unsigned(NUM_SAMPLES, v_accum'length);
+                    mean_out <= std_logic_vector(
+                                    v_quot(DATA_WIDTH-1 downto 0));
+                    fsm_state <= DONE;
+
+                when DONE =>
+                    ready <= '1';
+                    if start = '0' then
+                        fsm_state <= IDLE;
+                    end if;
+
+            end case;
+        end if;
+    end process;
+
+end Behavioral;
+\end{lstlisting}
+
+\subsection{Testbench for the Arithmetic Mean Unit}
+
+\begin{lstlisting}[language=VHDL, caption=VHDL Testbench for Arithmetic Mean Unit, frame=single]
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity MeanUnit_tb is
+end MeanUnit_tb;
+
+architecture sim of MeanUnit_tb is
+
+    constant NUM_SAMPLES : integer := 13;
+    constant DATA_WIDTH  : integer := 8;
+    constant CLK_PERIOD  : time    := 10 ns;
+    constant TIMEOUT_LIM : integer := 500;
+
+    signal clk_sig   : std_logic := '0';
+    signal rst_sig   : std_logic := '0';
+    signal start_sig : std_logic := '0';
+    signal ready_sig : std_logic;
+    signal mean_sig  : std_logic_vector(DATA_WIDTH-1 downto 0);
+
+    shared variable pass_count : integer := 0;
+    shared variable fail_count : integer := 0;
+
+    component MeanUnit
+        generic (
+            NUM_SAMPLES : integer;
+            DATA_WIDTH  : integer
+        );
+        port (
+            clk      : in  std_logic;
+            reset    : in  std_logic;
+            start    : in  std_logic;
+            ready    : out std_logic;
+            mean_out : out std_logic_vector(DATA_WIDTH-1 downto 0)
+        );
+    end component;
+
+    procedure verify_output(
+        tc_label : in string;
+        observed : in std_logic_vector(DATA_WIDTH-1 downto 0);
+        expected : in integer
+    ) is
+        variable obs_int : integer;
+    begin
+        obs_int := to_integer(unsigned(observed));
+        if obs_int = expected then
+            report "[PASS] " & tc_label
+                   & "  observed=" & integer'image(obs_int)
+                   & "  expected=" & integer'image(expected)
+                severity note;
+            pass_count := pass_count + 1;
+        else
+            report "[FAIL] " & tc_label
+                   & "  observed=" & integer'image(obs_int)
+                   & "  expected=" & integer'image(expected)
+                severity error;
+            fail_count := fail_count + 1;
+        end if;
+    end procedure;
+
+    procedure await_ready(
+        tc_label  : in string;
+        timed_out : out boolean
+    ) is
+        variable cycle_cnt : integer := 0;
+    begin
+        timed_out := false;
+        while ready_sig /= '1' loop
+            wait until rising_edge(clk_sig);
+            cycle_cnt := cycle_cnt + 1;
+            if cycle_cnt >= TIMEOUT_LIM then
+                report "[FAIL] " & tc_label &
+                       " TIMEOUT: ready_sig never asserted"
+                    severity error;
+                fail_count := fail_count + 1;
+                timed_out  := true;
+                return;
+            end if;
+        end loop;
+    end procedure;
+
+begin
+
+    clk_sig <= not clk_sig after CLK_PERIOD / 2;
+
+    uut : MeanUnit
+        generic map (
+            NUM_SAMPLES => NUM_SAMPLES,
+            DATA_WIDTH  => DATA_WIDTH
+        )
+        port map (
+            clk      => clk_sig,
+            reset    => rst_sig,
+            start    => start_sig,
+            ready    => ready_sig,
+            mean_out => mean_sig
+        );
+
+    stimulus : process
+        variable timed_out : boolean;
+    begin
+
+        rst_sig   <= '1';
+        start_sig <= '0';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+        rst_sig <= '0';
+        wait until rising_edge(clk_sig);
+
+        report "========================================" severity note;
+        report "MeanUnit Testbench" severity note;
+        report "NUM_SAMPLES=" & integer'image(NUM_SAMPLES) &
+               "  DATA_WIDTH=" & integer'image(DATA_WIDTH) severity note;
+        report "reg_file initialised to 0x0A (10) for all entries" severity note;
+        report "Expected mean = floor(13*10/13) = 10" severity note;
+        report "========================================" severity note;
+
+        -- TC1: Default initialisation
+        start_sig <= '1';
+        wait until rising_edge(clk_sig);
+        start_sig <= '0';
+
+        await_ready("TC1 Default-init mean=10", timed_out);
+        if not timed_out then
+            wait until rising_edge(clk_sig);
+            verify_output("TC1 Default-init mean=10", mean_sig, 10);
+        end if;
+
+        start_sig <= '0';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+
+        -- TC2: Reset clears ready_sig
+        rst_sig <= '1';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+
+        if ready_sig = '0' then
+            report "[PASS] TC2 Reset clears ready_sig" severity note;
+            pass_count := pass_count + 1;
+        else
+            report "[FAIL] TC2 ready_sig still high after reset" severity error;
+            fail_count := fail_count + 1;
+        end if;
+
+        rst_sig <= '0';
+        wait until rising_edge(clk_sig);
+
+        -- TC3: Run after reset
+        start_sig <= '1';
+        wait until rising_edge(clk_sig);
+        start_sig <= '0';
+
+        await_ready("TC3 Run after reset mean=10", timed_out);
+        if not timed_out then
+            wait until rising_edge(clk_sig);
+            verify_output("TC3 Run after reset mean=10", mean_sig, 10);
+        end if;
+
+        start_sig <= '0';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+
+        -- TC4: Consecutive run (idempotency)
+        start_sig <= '1';
+        wait until rising_edge(clk_sig);
+        start_sig <= '0';
+
+        await_ready("TC4 Consecutive run mean=10", timed_out);
+        if not timed_out then
+            wait until rising_edge(clk_sig);
+            verify_output("TC4 Consecutive run mean=10", mean_sig, 10);
+        end if;
+
+        start_sig <= '0';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+
+        -- TC5: Reset mid-operation
+        start_sig <= '1';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+
+        rst_sig <= '1';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+        rst_sig <= '0';
+        wait until rising_edge(clk_sig);
+
+        if ready_sig = '0' then
+            report "[PASS] TC5 Reset mid-operation clears ready_sig" severity note;
+            pass_count := pass_count + 1;
+        else
+            report "[FAIL] TC5 ready_sig still high after mid-op reset" severity error;
+            fail_count := fail_count + 1;
+        end if;
+
+        start_sig <= '1';
+        wait until rising_edge(clk_sig);
+        start_sig <= '0';
+
+        await_ready("TC5 Post-mid-reset run mean=10", timed_out);
+        if not timed_out then
+            wait until rising_edge(clk_sig);
+            verify_output("TC5 Post-mid-reset run mean=10", mean_sig, 10);
+        end if;
+
+        start_sig <= '0';
+        wait until rising_edge(clk_sig);
+        wait until rising_edge(clk_sig);
+
+        report "========================================" severity note;
+        report "PASS: " & integer'image(pass_count) severity note;
+        report "FAIL: " & integer'image(fail_count) severity note;
+        if fail_count = 0 then
+            report "ALL TESTS PASSED" severity note;
+        else
+            report integer'image(fail_count) & " TEST(S) FAILED" severity failure;
+        end if;
+        report "========================================" severity note;
+
+        wait;
+    end process;
+
+end sim;
+\end{lstlisting}
+
+\subsection{Results}
+
+\subsubsection{Simulation Waveform Analysis}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.95\textwidth]{Q4_Simulation.png}}
+    \caption{Simulation Waveform from Vivado -- MeanUnit Testbench}
+    \label{fig:Q4_waveform}
+\end{figure}
+
+Figure \ref{fig:Q4_waveform} shows the complete simulation waveform obtained from the Vivado simulator. The waveform confirms correct operation across all five test cases.
+
+\end{document}

@@ -1,0 +1,11 @@
+Time resolution is 1 ps
+Note: Starting Write Cycle to Address 0x010 with Data 0x3C
+Time: 100 ns  Iteration: 0  Process: /tb_SRAM_6116/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sim_1/new/SRAM_tb.vhd
+Note: Starting Read Cycle from Address 0x010
+Time: 180 ns  Iteration: 0  Process: /tb_SRAM_6116/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sim_1/new/SRAM_tb.vhd
+Note: Data read should be available now
+Time: 225 ns  Iteration: 0  Process: /tb_SRAM_6116/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sim_1/new/SRAM_tb.vhd
+Note: Testing Write and Read to different address
+Time: 325 ns  Iteration: 0  Process: /tb_SRAM_6116/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sim_1/new/SRAM_tb.vhd
+Note: Simulation Complete
+Time: 550 ns  Iteration: 0  Process: /tb_SRAM_6116/stim_proc  File: C:/Users/ayang/Desktop/Sem 6/Embedded Systems/Labs/Lab3/question_1/question_1.srcs/sim_1/new/SRAM_tb.vhd

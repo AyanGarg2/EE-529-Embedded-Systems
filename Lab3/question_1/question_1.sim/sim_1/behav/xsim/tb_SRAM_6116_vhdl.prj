@@ -1,0 +1,7 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../question_1.srcs/sources_1/new/SRAM.vhd" \
+"../../../../question_1.srcs/sim_1/new/SRAM_tb.vhd" \
+
+# Do not sort compile order
+nosort
