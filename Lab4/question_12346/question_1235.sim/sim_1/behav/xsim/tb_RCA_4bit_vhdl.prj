@@ -1,0 +1,13 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../question_1235.srcs/sources_1/new/CLA_4bit.vhd" \
+"../../../../question_1235.srcs/sources_1/new/subtractor.vhd" \
+"../../../../question_1235.srcs/sources_1/new/FA.vhd" \
+"../../../../question_1235.srcs/sources_1/new/RCA_4bit.vhd" \
+"../../../../question_1235.srcs/sources_1/new/HA.vhd" \
+"../../../../question_1235.srcs/sim_1/new/subtractor_tb.vhd" \
+"../../../../question_1235.srcs/sim_1/new/CLA_tb.vhd" \
+"../../../../question_1235.srcs/sim_1/new/RCA_tb.vhd" \
+
+# Do not sort compile order
+nosort

@@ -1,0 +1,20 @@
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L secureip --snapshot tb_RCA_4bit_behav xil_defaultlib.tb_RCA_4bit -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling package std.standard
+Compiling package std.textio
+Compiling package ieee.std_logic_1164
+Compiling package ieee.std_logic_arith
+Compiling package ieee.std_logic_unsigned
+Compiling architecture dataflow of entity xil_defaultlib.HA [ha_default]
+Compiling architecture structural of entity xil_defaultlib.FA [fa_default]
+Compiling architecture structural of entity xil_defaultlib.RCA_4bit [rca_4bit_default]
+Compiling architecture behavioral of entity xil_defaultlib.tb_rca_4bit
+Built simulation snapshot tb_RCA_4bit_behav
