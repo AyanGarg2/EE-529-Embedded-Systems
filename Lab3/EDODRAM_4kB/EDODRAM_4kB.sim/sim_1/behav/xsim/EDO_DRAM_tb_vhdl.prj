@@ -1,7 +1,0 @@
-# compile vhdl design source files
-vhdl xil_defaultlib  \
-"../../../../EDODRAM_4kB.srcs/sources_1/new/EDO_DRAM.vhd" \
-"../../../../EDODRAM_4kB.srcs/sim_1/new/EDO_DRAM_tb.vhd" \
-
-# Do not sort compile order
-nosort
